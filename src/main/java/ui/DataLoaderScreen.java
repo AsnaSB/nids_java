@@ -92,7 +92,6 @@ public class DataLoaderScreen extends BorderPane {
                 FileChooser chooser = new FileChooser();
                 chooser.setTitle("Select NSL-KDD CSV");
 
-                // Suggest data directory
                 File currentDir = new File(System.getProperty("user.dir"));
                 File dataDir = new File(currentDir, "data");
                 if (dataDir.exists()) {
