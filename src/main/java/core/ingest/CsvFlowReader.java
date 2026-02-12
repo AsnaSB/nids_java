@@ -12,13 +12,12 @@ public class CsvFlowReader {
 
     public List<FlowRecord> read(String filePath) {
         List<FlowRecord> records = new ArrayList<>();
-        skippedRows = 0; // Reset for each read
+        skippedRows = 0; 
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
 
             String line;
 
-            // read header row and ignore it
             String header = br.readLine();
             if (header == null)
                 return records;
@@ -29,7 +28,6 @@ public class CsvFlowReader {
 
                 String[] parts = line.split(",");
 
-                // Expected 42 columns for NSL-KDD cleaned data
                 if (parts.length < 42) {
                     skippedRows++;
                     continue;
@@ -42,10 +40,8 @@ public class CsvFlowReader {
                     String flag = parts[3].trim();
                     int srcBytes = Integer.parseInt(parts[4].trim());
                     int dstBytes = Integer.parseInt(parts[5].trim());
-                    // Skip columns 6-21
                     int count = Integer.parseInt(parts[22].trim());
                     int srvCount = Integer.parseInt(parts[23].trim());
-                    // Skip columns 24-40
                     String label = parts[41].trim();
 
                     records.add(new FlowRecord(duration, protocolType, service, flag, srcBytes, dstBytes, label));
