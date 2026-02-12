@@ -1,6 +1,7 @@
 // No change needed, 'package ui;' already present.
 package ui;
 
+
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;

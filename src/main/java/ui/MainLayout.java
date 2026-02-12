@@ -1,4 +1,3 @@
-// No change needed, 'package ui;' already present.
 package ui;
 
 import javafx.geometry.Insets;
@@ -7,7 +6,7 @@ import javafx.scene.layout.*;
 
 public class MainLayout extends BorderPane {
 
-    private StackPane contentArea = new StackPane();
+    private final StackPane contentArea = new StackPane();
 
     public MainLayout() {
 
@@ -19,10 +18,12 @@ public class MainLayout extends BorderPane {
 
         Button homeBtn = createNavButton("🏠  Home");
         Button trafficBtn = createNavButton("📡  Traffic Viewer");
+        Button featureBtn = createNavButton("🧩  Feature Inspector"); // ✅ new
         Button resultsBtn = createNavButton("🤖  Detection Results");
         Button alertsBtn = createNavButton("🚨  Alerts / Logs");
 
-        sidebar.getChildren().addAll(homeBtn, trafficBtn, resultsBtn, alertsBtn);
+        // ✅ Add buttons ONLY ONCE (and in correct order)
+        sidebar.getChildren().addAll(homeBtn, trafficBtn, featureBtn, resultsBtn, alertsBtn);
 
         // ===== Content Area =====
         contentArea.setStyle("-fx-background-color: white;");
@@ -36,6 +37,7 @@ public class MainLayout extends BorderPane {
         // Navigation
         homeBtn.setOnAction(e -> showHome());
         trafficBtn.setOnAction(e -> showTraffic());
+        featureBtn.setOnAction(e -> showFeatureInspector()); // ✅ new
         resultsBtn.setOnAction(e -> showResults());
         alertsBtn.setOnAction(e -> showAlerts());
     }
@@ -80,6 +82,10 @@ public class MainLayout extends BorderPane {
 
     private void showTraffic() {
         contentArea.getChildren().setAll(new TrafficViewerScreen());
+    }
+
+    private void showFeatureInspector() {
+        contentArea.getChildren().setAll(new FeatureInspectorScreen()); // ✅ new screen class
     }
 
     private void showResults() {

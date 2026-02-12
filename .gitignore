@@ -1,3 +1,54 @@
+# ===============================
+# Java build output
+# ===============================
 out/
-logs/
 target/
+bin/
+build/
+*.class
+
+# ===============================
+# Logs
+# ===============================
+logs/
+*.log
+
+# ===============================
+# Local test / temporary files
+# ===============================
+*.tmp
+*.swp
+
+# ===============================
+# Data files (if not meant to be committed)
+# Uncomment if datasets should NOT be pushed
+# ===============================
+# data/
+# *.csv
+
+# ===============================
+# IDE files
+# ===============================
+
+# VS Code
+.vscode/
+
+# IntelliJ
+.idea/
+*.iml
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# ===============================
+# OS files
+# ===============================
+.DS_Store
+Thumbs.db
+
+# ===============================
+# Local debug utilities
+# ===============================
+src/main/java/util/PrintCsvHeaders.java
