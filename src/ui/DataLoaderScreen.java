@@ -17,14 +17,12 @@ public class DataLoaderScreen extends BorderPane {
 
     public DataLoaderScreen() {
 
-        // ---------- Buttons ----------
         Button loadTrainBtn = new Button("Load Train CSV");
         Button loadTestBtn = new Button("Load Test CSV");
 
         HBox buttonBar = new HBox(10, loadTrainBtn, loadTestBtn);
         buttonBar.setPadding(new Insets(10));
 
-        // ---------- Table Columns ----------
         TableColumn<FlowRecord, Number> durationCol = new TableColumn<>("Duration");
         durationCol.setCellValueFactory(data -> 
             new javafx.beans.property.SimpleIntegerProperty(data.getValue().getDuration()));
@@ -58,11 +56,9 @@ public class DataLoaderScreen extends BorderPane {
                 flagCol, srcBytesCol, dstBytesCol, labelCol
         );
 
-        // ---------- Button Actions ----------
         loadTrainBtn.setOnAction(e -> loadCsv("data/nsl_kdd_train_clean.csv"));
         loadTestBtn.setOnAction(e -> loadCsv("data/nsl_kdd_test_clean.csv"));
 
-        // ---------- Layout ----------
         VBox topBox = new VBox(5, buttonBar, statusLabel);
         topBox.setPadding(new Insets(10));
 
@@ -74,7 +70,6 @@ public class DataLoaderScreen extends BorderPane {
         CsvFlowReader reader = new CsvFlowReader();
         List<FlowRecord> records = reader.read(path);
 
-        // Show only first 30 rows
         table.getItems().setAll(records.subList(0, Math.min(30, records.size())));
 
         statusLabel.setText(
