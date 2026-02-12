@@ -26,7 +26,6 @@ public class FlowRecord {
         this.srcBytes = srcBytes;
         this.dstBytes = dstBytes;
         this.label = label;
-
   
         values.put("duration", String.valueOf(duration));
         values.put("protocol", protocol);
@@ -36,7 +35,6 @@ public class FlowRecord {
         values.put("dst_bytes", String.valueOf(dstBytes));
         values.put("label", label);
     }
-
     
     public int getDuration() { return duration; }
     public String getProtocol() { return protocol; }
@@ -45,7 +43,6 @@ public class FlowRecord {
     public int getSrcBytes() { return srcBytes; }
     public int getDstBytes() { return dstBytes; }
     public String getLabel() { return label; }
-
 
     public String get(String columnName) {
         return values.get(columnName);
