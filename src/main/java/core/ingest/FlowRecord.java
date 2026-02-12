@@ -13,7 +13,7 @@ public class FlowRecord {
     private int dstBytes;
     private String label;
 
-    // NEW: store all values by column name
+    
     private Map<String, String> values = new HashMap<>();
 
     public FlowRecord(int duration, String protocol, String service,
@@ -27,7 +27,7 @@ public class FlowRecord {
         this.dstBytes = dstBytes;
         this.label = label;
 
-        // Fill map for flexible access
+  
         values.put("duration", String.valueOf(duration));
         values.put("protocol", protocol);
         values.put("service", service);
@@ -37,7 +37,7 @@ public class FlowRecord {
         values.put("label", label);
     }
 
-    // Existing getters (unchanged)
+    
     public int getDuration() { return duration; }
     public String getProtocol() { return protocol; }
     public String getService() { return service; }
@@ -46,7 +46,7 @@ public class FlowRecord {
     public int getDstBytes() { return dstBytes; }
     public String getLabel() { return label; }
 
-    // NEW method requested by team lead
+
     public String get(String columnName) {
         return values.get(columnName);
     }
