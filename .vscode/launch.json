@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "MainApp",
+            "request": "launch",
+            "mainClass": "MainApp",
+            "projectName": "nids-gui_571d225f"
+        },
+        {
+            "type": "java",
+            "name": "Launch NIDS GUI",
+            "request": "launch",
+            "mainClass": "MainApp",
+            "projectName": "nids-gui",
+            "vmArgs": "--module-path C:\\javafx\\lib --add-modules javafx.controls,javafx.fxml"
+        }
+    ]
+}

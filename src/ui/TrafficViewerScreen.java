@@ -1,4 +1,3 @@
-// Traffic viewer screen for the NIDS GUI
 package ui;
 
 import javafx.geometry.Pos;

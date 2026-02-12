@@ -1,4 +1,3 @@
-// Alerts and logs screen for the NIDS GUI
 package ui;
 
 import javafx.geometry.Pos;

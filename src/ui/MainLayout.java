@@ -1,9 +1,9 @@
-// No change needed, 'package ui;' already present.
 package ui;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
+import ui.DataLoaderScreen;
 
 public class MainLayout extends BorderPane {
 
@@ -11,7 +11,6 @@ public class MainLayout extends BorderPane {
 
     public MainLayout() {
 
-        // ===== Sidebar =====
         VBox sidebar = new VBox(20);
         sidebar.setPadding(new Insets(20));
         sidebar.setPrefWidth(200);
@@ -21,26 +20,24 @@ public class MainLayout extends BorderPane {
         Button trafficBtn = createNavButton("📡  Traffic Viewer");
         Button resultsBtn = createNavButton("🤖  Detection Results");
         Button alertsBtn = createNavButton("🚨  Alerts / Logs");
+        Button dataBtn = createNavButton("📂  Dataset Loader");
 
-        sidebar.getChildren().addAll(homeBtn, trafficBtn, resultsBtn, alertsBtn);
+        sidebar.getChildren().addAll(homeBtn, trafficBtn, resultsBtn, alertsBtn, dataBtn);
 
-        // ===== Content Area =====
         contentArea.setStyle("-fx-background-color: white;");
 
         setLeft(sidebar);
         setCenter(contentArea);
 
-        // Default screen
         showHome();
 
-        // Navigation
         homeBtn.setOnAction(e -> showHome());
         trafficBtn.setOnAction(e -> showTraffic());
         resultsBtn.setOnAction(e -> showResults());
         alertsBtn.setOnAction(e -> showAlerts());
+        dataBtn.setOnAction(e -> contentArea.getChildren().setAll(new DataLoaderScreen()));
     }
 
-    // ===== Button Style =====
     private Button createNavButton(String text) {
         Button btn = new Button(text);
         btn.setMaxWidth(Double.MAX_VALUE);
@@ -73,7 +70,6 @@ public class MainLayout extends BorderPane {
         return btn;
     }
 
-    // ===== Screen Switching =====
     private void showHome() {
         contentArea.getChildren().setAll(new HomeScreen());
     }
