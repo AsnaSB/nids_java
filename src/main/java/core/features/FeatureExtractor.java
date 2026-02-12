@@ -1,6 +1,8 @@
 package core.features;
 
 import core.ingest.FlowRecordView;
+import core.contracts.TrafficRecord;
+import core.ingest.TrafficRecordViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,11 @@ public class FeatureExtractor {
                 incomplete,
                 missing
         );
+    }
+
+    // ✅ Overload for TrafficRecord (ADD THIS HERE)
+    public FlowFeatures extract(TrafficRecord record) {
+        return extract(new TrafficRecordViewAdapter(record));
     }
 
     private int parseInt(String value, String fieldName, List<String> missing, int defaultValue) {
