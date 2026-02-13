@@ -1,27 +1,25 @@
 package core.eval;
-import java.util.*;
+
+import java.util.List;
 
 public class Evaluator {
+    // Non-static method
+    public void evaluate(List<String> predictedLabels, List<String> actualLabels) {
+        int tp = 0, tn = 0, fp = 0, fn = 0;
 
-    public static class Metrics {
-        public int TP, FP, TN, FN;
-        public double accuracy;
-    }
-
-    public Metrics evaluate(List<String> predicted, List<String> actual) {
-        Metrics metrics = new Metrics();
-
-        for (int i = 0; i < predicted.size(); i++) {
-            String p = predicted.get(i);
-            String a = actual.get(i);
-
-            if (p.equals("ATTACK") && a.equals("ATTACK")) metrics.TP++;
-            else if (p.equals("ATTACK") && a.equals("NORMAL")) metrics.FP++;
-            else if (p.equals("NORMAL") && a.equals("NORMAL")) metrics.TN++;
-            else if (p.equals("NORMAL") && a.equals("ATTACK")) metrics.FN++;
+        // Compare each predicted vs actual
+        for (int i = 0; i < predictedLabels.size(); i++) {
+            if (predictedLabels.get(i).equals("ATTACK") && actualLabels.get(i).equals("ATTACK")) tp++;
+            else if (predictedLabels.get(i).equals("NORMAL") && actualLabels.get(i).equals("NORMAL")) tn++;
+            else if (predictedLabels.get(i).equals("ATTACK") && actualLabels.get(i).equals("NORMAL")) fp++;
+            else if (predictedLabels.get(i).equals("NORMAL") && actualLabels.get(i).equals("ATTACK")) fn++;
         }
 
-        metrics.accuracy = (double)(metrics.TP + metrics.TN) / predicted.size();
-        return metrics;
+        int total = predictedLabels.size();
+        double accuracy = (double)(tp + tn) / total;
+
+        // ✅ Print metrics
+        System.out.println("Accuracy: " + accuracy);
+        System.out.println("TP: " + tp + ", TN: " + tn + ", FP: " + fp + ", FN: " + fn);
     }
 }
