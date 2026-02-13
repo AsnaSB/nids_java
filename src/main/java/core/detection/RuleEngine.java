@@ -1,3 +1,4 @@
+package core.detection;
 import java.util.*;
 
 public class RuleEngine {
