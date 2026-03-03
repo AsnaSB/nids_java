@@ -3,6 +3,7 @@ package core.features;
 import core.ingest.FlowRecordView;
 import core.contracts.TrafficRecord;
 import core.ingest.TrafficRecordViewAdapter;
+import core.detection.FlowFeatures;
 
 import java.util.ArrayList;
 import java.util.List;

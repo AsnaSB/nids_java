@@ -2,6 +2,7 @@ package core.features;
 
 import core.contracts.TrafficRecord;
 import core.ingest.CsvTrafficRecord;
+import core.detection.FlowFeatures;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -39,11 +40,11 @@ public class RealCsvTrafficRecordFeatureTest {
             FlowFeatures f = fx.extract(rec); // ✅ uses your overload
 
             System.out.println("count=" + f.count);
-            System.out.println("serrorRate=" + f.serrorRate);
-            System.out.println("dstHostCount=" + f.dstHostCount);
-            System.out.println("rerrorRate=" + f.rerrorRate);
+            System.out.println("serrorRate=" + f.serror_rate);
+            System.out.println("dstHostCount=" + f.dst_host_count);
+            System.out.println("rerrorRate=" + f.rerror_rate);
             System.out.println("incomplete=" + f.incomplete);
-            System.out.println("missing=" + f.missingFields);
+            System.out.println("missing=" + f.missing);
         }
     }
 }
