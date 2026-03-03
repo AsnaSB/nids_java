@@ -2,9 +2,8 @@ package core.app;
 
 import core.contracts.TrafficRecord;
 import core.features.FeatureExtractor;
-import core.features.FlowFeatures;
+import core.detection.FlowFeatures;
 import core.detection.RuleEngine;
-import core.detection.RuleDecision;
 import core.logging.AlertLogger;
 
 import java.time.LocalDateTime;
@@ -18,10 +17,10 @@ public class PipelineRunner {
     private final RuleEngine engine = new RuleEngine();
     private final AlertLogger logger = new AlertLogger();
 
-    public List<RuleDecision> run(String filePath) {
+    public List<RuleEngine.AlertRecord> run(String filePath) {
 
         List<TrafficRecord> records = loader.load(filePath);
-        List<RuleDecision> results = new ArrayList<>();
+        List<RuleEngine.AlertRecord> results = new ArrayList<>();
 
         int rowId = 0;
 
@@ -31,19 +30,25 @@ public class PipelineRunner {
             FlowFeatures features = extractor.extract(record);
 
             // Step 2: Run detection
-            RuleDecision decision = engine.evaluate(features);
+            // Step 2: Run detection
+            List<FlowFeatures> tempList = new ArrayList<>();
+            tempList.add(features);
 
+            List<RuleEngine.AlertRecord> alerts =
+                    engine.runRules(tempList);
+
+            RuleEngine.AlertRecord decision = alerts.get(0);
             results.add(decision);
 
             // Step 3: Log only ATTACK traffic
-            if ("ATTACK".equals(decision.getLabel())) {
+            if ("ATTACK".equals(decision.predictedLabel)) {
 
                 String json = String.format(
                         "{\"time\":\"%s\",\"rowId\":%d,\"label\":\"%s\",\"confidence\":%.2f}",
                         LocalDateTime.now(),
                         rowId,
-                        decision.getLabel(),
-                        decision.getConfidence()
+                        decision.predictedLabel,
+                        decision.confidence
                 );
 
                 logger.log(json);
