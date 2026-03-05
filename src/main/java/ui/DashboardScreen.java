@@ -1,37 +1,67 @@
 package ui;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 
-public class DashboardScreen extends JFrame {
+import core.app.PipelineRunner;
+import core.detection.RuleDecision;
 
-    private JButton runButton;
-    private JLabel metricsLabel;
+import java.util.List;
+
+public class DashboardScreen {
+
+    private VBox root;
+    private Button runButton;
+    private Label metricsLabel;
 
     public DashboardScreen() {
-        setTitle("NIDS Evaluation Dashboard");
-        setSize(400, 300);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new FlowLayout());
 
-        metricsLabel = new JLabel("Metrics will appear here");
-        runButton = new JButton("Run Evaluation on Test CSV");
+        root = new VBox(15);
+        root.setPadding(new Insets(20));
 
-        runButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                metricsLabel.setText("Running evaluation... (placeholder)");
-                // Here you will call RuleEngine + Evaluator
+        metricsLabel = new Label("Metrics will appear here");
+        runButton = new Button("Run Evaluation on Test CSV");
+
+        runButton.setOnAction(e -> {
+
+            try {
+
+                PipelineRunner runner = new PipelineRunner();
+
+                // Call the correct method
+                List<RuleDecision> results = runner.run("data/nsl_kdd_test_clean.csv");
+
+                int attackCount = 0;
+                int normalCount = 0;
+
+                for (RuleDecision r : results) {
+                    if ("ATTACK".equals(r.getLabel())) {
+                        attackCount++;
+                    } else {
+                        normalCount++;
+                    }
+                }
+
+                metricsLabel.setText(
+                        "Total: " + results.size() +
+                        " | ATTACK: " + attackCount +
+                        " | NORMAL: " + normalCount
+                );
+
+            } catch (Exception ex) {
+
+                metricsLabel.setText("Error running evaluation");
+                ex.printStackTrace();
             }
+
         });
 
-        add(runButton);
-        add(metricsLabel);
-
-        setVisible(true);
+        root.getChildren().addAll(runButton, metricsLabel);
     }
 
-    public static void main(String[] args) {
-        new DashboardScreen();
+    public VBox getView() {
+        return root;
     }
 }

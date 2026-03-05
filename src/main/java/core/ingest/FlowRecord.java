@@ -13,10 +13,7 @@ public class FlowRecord {
     private int dstBytes;
     private String label;
 
-<<<<<<< Updated upstream
-    
-=======
->>>>>>> Stashed changes
+
     private Map<String, String> values = new HashMap<>();
 
     public FlowRecord(int duration, String protocol, String service,
@@ -29,11 +26,7 @@ public class FlowRecord {
         this.srcBytes = srcBytes;
         this.dstBytes = dstBytes;
         this.label = label;
-<<<<<<< Updated upstream
-  
-=======
 
->>>>>>> Stashed changes
         values.put("duration", String.valueOf(duration));
         values.put("protocol", protocol);
         values.put("service", service);
@@ -42,11 +35,7 @@ public class FlowRecord {
         values.put("dst_bytes", String.valueOf(dstBytes));
         values.put("label", label);
     }
-<<<<<<< Updated upstream
-    
-=======
 
->>>>>>> Stashed changes
     public int getDuration() { return duration; }
     public String getProtocol() { return protocol; }
     public String getService() { return service; }
