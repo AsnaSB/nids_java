@@ -10,6 +10,7 @@ import java.util.List;
 
 public class FeatureExtractor {
 
+    // ===== Main extraction method =====
     public FlowFeatures extract(FlowRecordView record) {
 
         List<String> missing = new ArrayList<>();
@@ -22,21 +23,25 @@ public class FeatureExtractor {
         boolean incomplete = !missing.isEmpty();
 
         return new FlowFeatures(
-                count,
-                serrorRate,
-                dstHostCount,
-                rerrorRate,
-                incomplete,
-                missing
-        );
+            count,
+            serrorRate,
+            dstHostCount,
+            rerrorRate,
+            incomplete,
+            missing,
+            null
+    );
     }
 
-    // ✅ Overload for TrafficRecord (ADD THIS HERE)
+    // ===== Adapter overload for TrafficRecord =====
     public FlowFeatures extract(TrafficRecord record) {
         return extract(new TrafficRecordViewAdapter(record));
     }
 
+    // ===== Helper methods =====
+
     private int parseInt(String value, String fieldName, List<String> missing, int defaultValue) {
+
         if (value == null || value.trim().isEmpty()) {
             missing.add(fieldName);
             return defaultValue;
@@ -51,6 +56,7 @@ public class FeatureExtractor {
     }
 
     private double parseDouble(String value, String fieldName, List<String> missing, double defaultValue) {
+
         if (value == null || value.trim().isEmpty()) {
             missing.add(fieldName);
             return defaultValue;

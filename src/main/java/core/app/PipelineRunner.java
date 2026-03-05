@@ -12,50 +12,86 @@ import java.util.List;
 
 public class PipelineRunner {
 
-    private final CsvDatasetLoader loader = new CsvDatasetLoader();
-    private final FeatureExtractor extractor = new FeatureExtractor();
-    private final RuleEngine engine = new RuleEngine();
-    private final AlertLogger logger = new AlertLogger();
+    // Pipeline components
+    private final CsvDatasetLoader loader;
+    private final FeatureExtractor extractor;
+    private final RuleEngine ruleEngine;
+    private final AlertLogger logger;
 
+    public PipelineRunner() {
+        this.loader = new CsvDatasetLoader();
+        this.extractor = new FeatureExtractor();
+        this.ruleEngine = new RuleEngine();
+        this.logger = new AlertLogger();
+    }
+
+    /**
+     * Executes the full detection pipeline
+     */
     public List<RuleEngine.AlertRecord> run(String filePath) {
 
+        System.out.println("Loading dataset: " + filePath);
+
+        // Step 1: Load dataset
         List<TrafficRecord> records = loader.load(filePath);
+
+        System.out.println("Records loaded: " + records.size());
+
         List<RuleEngine.AlertRecord> results = new ArrayList<>();
 
         int rowId = 0;
 
         for (TrafficRecord record : records) {
 
-            // Step 1: Extract features
-            FlowFeatures features = extractor.extract(record);
+            try {
 
-            // Step 2: Run detection
-            // Step 2: Run detection
-            List<FlowFeatures> tempList = new ArrayList<>();
-            tempList.add(features);
+                // Step 2: Extract features
+                FlowFeatures features = extractor.extract(record);
 
-            List<RuleEngine.AlertRecord> alerts =
-                    engine.runRules(tempList);
+                // Step 3: Run rule-based detection
+                List<FlowFeatures> featureList = new ArrayList<>();
+                featureList.add(features);
 
-            RuleEngine.AlertRecord decision = alerts.get(0);
-            results.add(decision);
+                List<RuleEngine.AlertRecord> alerts =
+                        ruleEngine.runRules(featureList);
 
-            // Step 3: Log only ATTACK traffic
-            if ("ATTACK".equals(decision.predictedLabel)) {
+                if (alerts.isEmpty()) {
+                    rowId++;
+                    continue;
+                }
 
-                String json = String.format(
-                        "{\"time\":\"%s\",\"rowId\":%d,\"label\":\"%s\",\"confidence\":%.2f}",
-                        LocalDateTime.now(),
-                        rowId,
-                        decision.predictedLabel,
-                        decision.confidence
+                RuleEngine.AlertRecord decision = alerts.get(0);
+
+                // Store decision
+                results.add(decision);
+
+                // Step 4: Log attack alerts
+                if ("ATTACK".equals(decision.predictedLabel)) {
+
+                    String json = String.format(
+                            "{\"time\":\"%s\",\"rowId\":%d,\"label\":\"%s\",\"confidence\":%.2f,\"severity\":\"%s\"}",
+                            LocalDateTime.now(),
+                            rowId,
+                            decision.predictedLabel,
+                            decision.confidence,
+                            decision.severity
+                    );
+
+                    logger.log(json);
+                }
+
+            } catch (Exception e) {
+
+                System.err.println(
+                        "Error processing record " + rowId + ": " + e.getMessage()
                 );
-
-                logger.log(json);
             }
 
             rowId++;
         }
+
+        System.out.println("Pipeline completed.");
+        System.out.println("Total alerts generated: " + results.size());
 
         return results;
     }
