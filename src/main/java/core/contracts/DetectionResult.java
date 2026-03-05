@@ -1,30 +1,48 @@
 package core.contracts;
 
-import java.time.Instant;
+import java.util.Map;
 
-/**
- * Output of a detection module for one FeatureVector.
- */
-public interface DetectionResult {
+public class DetectionResult {
 
-    /** Classification label: e.g., "BENIGN", "DOS", "PROBE", "ANOMALY". */
-    String label();
+    private String predictedCategory;
+    private String predictedAttack;
 
-    /**
-     * Confidence score in range [0.0, 1.0].
-     * Rule-based detectors can use fixed values like 0.9.
-     */
-    double confidence();
+    private Map<String, Double> categoryProbabilities;
+    private Map<String, Double> attackProbabilities;
 
-    /** Timestamp tied to the analyzed traffic event. */
-    Instant timestamp();
+    private double confidence;
 
-    /**
-     * Human-readable explanation of why it was labeled that way.
-     * Example: "SYN rate exceeded threshold (120/s > 60/s)".
-     */
-    String reason();
+    public DetectionResult(
+            String predictedCategory,
+            String predictedAttack,
+            Map<String, Double> categoryProbabilities,
+            Map<String, Double> attackProbabilities,
+            double confidence
+    ) {
+        this.predictedCategory = predictedCategory;
+        this.predictedAttack = predictedAttack;
+        this.categoryProbabilities = categoryProbabilities;
+        this.attackProbabilities = attackProbabilities;
+        this.confidence = confidence;
+    }
 
-    /** The input feature vector that produced this result (optional but recommended). */
-    FeatureVector input();
+    public String getPredictedCategory() {
+        return predictedCategory;
+    }
+
+    public String getPredictedAttack() {
+        return predictedAttack;
+    }
+
+    public Map<String, Double> getCategoryProbabilities() {
+        return categoryProbabilities;
+    }
+
+    public Map<String, Double> getAttackProbabilities() {
+        return attackProbabilities;
+    }
+
+    public double getConfidence() {
+        return confidence;
+    }
 }
