@@ -1,6 +1,4 @@
-// No change needed, 'package ui;' already present.
 package ui;
-
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -17,6 +15,7 @@ public class HomeScreen extends StackPane {
         VBox card = new VBox(title);
         card.setAlignment(Pos.CENTER);
         card.setPrefSize(350, 220);
+
         card.setStyle(
             "-fx-background-color: white;" +
             "-fx-border-color: black;" +

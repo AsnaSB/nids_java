@@ -23,4 +23,27 @@ public class AlertLogger {
             e.printStackTrace();
         }
     }
+
+    public String formatAlert(AlertRecord record) {
+
+        StringBuilder json = new StringBuilder();
+
+        json.append("{");
+        json.append("\"timestamp\":\"").append(record.getTimestamp()).append("\",");
+
+        json.append("\"rowId\":").append(record.getRowId()).append(",");
+
+        json.append("\"predicted_category\":\"")
+                .append(record.getPredictedCategory()).append("\",");
+
+        json.append("\"predicted_attack\":\"")
+                .append(record.getPredictedAttack()).append("\",");
+
+        json.append("\"confidence\":")
+                .append(record.getConfidence());
+
+        json.append("}");
+
+        return json.toString();
+    }
 }
