@@ -1,9 +1,10 @@
 package core.app;
 
 import core.contracts.TrafficRecord;
+import core.contracts.DetectionResult;
 import core.features.FeatureExtractor;
 import core.detection.FlowFeatures;
-import core.detection.RuleEngine;
+import core.detection.MLDetector;
 import core.logging.AlertLogger;
 
 import java.time.LocalDateTime;
@@ -15,20 +16,21 @@ public class PipelineRunner {
     // Pipeline components
     private final CsvDatasetLoader loader;
     private final FeatureExtractor extractor;
-    private final RuleEngine ruleEngine;
+    private final MLDetector detector;
     private final AlertLogger logger;
 
     public PipelineRunner() {
+
         this.loader = new CsvDatasetLoader();
         this.extractor = new FeatureExtractor();
-        this.ruleEngine = new RuleEngine();
+        this.detector = new MLDetector();
         this.logger = new AlertLogger();
     }
 
     /**
      * Executes the full detection pipeline
      */
-    public List<RuleEngine.AlertRecord> run(String filePath) {
+    public List<DetectionResult> run(String filePath) {
 
         System.out.println("Loading dataset: " + filePath);
 
@@ -37,7 +39,7 @@ public class PipelineRunner {
 
         System.out.println("Records loaded: " + records.size());
 
-        List<RuleEngine.AlertRecord> results = new ArrayList<>();
+        List<DetectionResult> results = new ArrayList<>();
 
         int rowId = 0;
 
@@ -48,33 +50,35 @@ public class PipelineRunner {
                 // Step 2: Extract features
                 FlowFeatures features = extractor.extract(record);
 
-                // Step 3: Run rule-based detection
-                List<FlowFeatures> featureList = new ArrayList<>();
-                featureList.add(features);
+                // Step 3: Run ML detection
+                DetectionResult decision = detector.detect(features.mlVector);
 
-                List<RuleEngine.AlertRecord> alerts =
-                        ruleEngine.runRules(featureList);
-
-                if (alerts.isEmpty()) {
+                if (decision == null) {
                     rowId++;
                     continue;
                 }
 
-                RuleEngine.AlertRecord decision = alerts.get(0);
+                // Step 4: Print prediction output
+                System.out.println(
+                        "Prediction → Row " + rowId +
+                        " | Category: " + decision.getPredictedCategory() +
+                        " | Attack: " + decision.getPredictedAttack() +
+                        " | Confidence: " + decision.getConfidence()
+                );
 
-                // Store decision
+                // Store result
                 results.add(decision);
 
-                // Step 4: Log attack alerts
-                if ("ATTACK".equals(decision.predictedLabel)) {
+                // Step 5: Log attack alerts
+                if (!decision.getPredictedCategory().equalsIgnoreCase("normal")) {
 
                     String json = String.format(
-                            "{\"time\":\"%s\",\"rowId\":%d,\"label\":\"%s\",\"confidence\":%.2f,\"severity\":\"%s\"}",
+                            "{\"time\":\"%s\",\"rowId\":%d,\"category\":\"%s\",\"attack\":\"%s\",\"confidence\":%.2f}",
                             LocalDateTime.now(),
                             rowId,
-                            decision.predictedLabel,
-                            decision.confidence,
-                            decision.severity
+                            decision.getPredictedCategory(),
+                            decision.getPredictedAttack(),
+                            decision.getConfidence()
                     );
 
                     logger.log(json);
@@ -91,7 +95,7 @@ public class PipelineRunner {
         }
 
         System.out.println("Pipeline completed.");
-        System.out.println("Total alerts generated: " + results.size());
+        System.out.println("Total records processed: " + results.size());
 
         return results;
     }

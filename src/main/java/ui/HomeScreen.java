@@ -1,29 +1,30 @@
 package ui;
 
-import javafx.geometry.Pos;
+import javafx.geometry.Insets;
 import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
-public class HomeScreen extends StackPane {
+public class HomeScreen extends BorderPane {
 
     public HomeScreen() {
 
-        Label title = new Label("Home");
-        title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+        VBox container = new VBox(15);
+        container.setPadding(new Insets(40));
 
-        VBox card = new VBox(title);
-        card.setAlignment(Pos.CENTER);
-        card.setPrefSize(350, 220);
+        Label title = new Label("Network Intrusion Detection System");
+        title.setStyle("-fx-font-size: 26px; -fx-font-weight: bold;");
 
-        card.setStyle(
-            "-fx-background-color: white;" +
-            "-fx-border-color: black;" +
-            "-fx-border-width: 2;" +
-            "-fx-border-radius: 12;" +
-            "-fx-background-radius: 12;"
+        Label subtitle = new Label(
+                "Dashboard for monitoring network traffic and intrusion detection."
         );
 
-        getChildren().add(card);
+        Label info = new Label(
+                "Use the sidebar to navigate between traffic viewer, features, detection results and alerts."
+        );
+
+        container.getChildren().addAll(title, subtitle, info);
+
+        setCenter(container);
     }
 }

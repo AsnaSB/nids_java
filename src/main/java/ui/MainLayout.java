@@ -1,5 +1,7 @@
 package ui;
-
+import core.app.PipelineRunner;
+import core.contracts.DetectionResult;
+import java.util.List;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
@@ -89,8 +91,16 @@ public class MainLayout extends BorderPane {
     }
 
     private void showResults() {
-        contentArea.getChildren().setAll(new DetectionResultsScreen());
-    }
+
+    core.app.PipelineRunner runner = new core.app.PipelineRunner();
+
+    java.util.List<core.contracts.DetectionResult> results =
+            runner.run("data/nsl_kdd_test_clean.csv");
+
+    contentArea.getChildren().setAll(
+            new DetectionResultsScreen(results)
+    );
+}
 
     private void showAlerts() {
         contentArea.getChildren().setAll(new AlertsLogsScreen());
