@@ -52,3 +52,7 @@ Thumbs.db
 # Local debug utilities
 # ===============================
 src/main/java/util/PrintCsvHeaders.java
+*.class
+target/
+bin/
+out/

@@ -13,10 +13,8 @@ public class FlowRecord {
     private int srcBytes;
     private int dstBytes;
 
-    // Hierarchical labels
-    private String attackCategory;
-    private String attackName;
-    private String binaryLabel;
+
+    private Map<String, String> values = new HashMap<>();
 
     // store all values
     private Map<String,String> values = new HashMap<>();
@@ -35,7 +33,7 @@ public class FlowRecord {
         this.flag = flag;
         this.srcBytes = srcBytes;
         this.dstBytes = dstBytes;
-        this.attackCategory = attackCategory;
+        this.label = label;
 
         values.put("duration", String.valueOf(duration));
         values.put("protocol_type", protocol);
@@ -46,37 +44,13 @@ public class FlowRecord {
         values.put("attack_category", attackCategory);
     }
 
-    public int getDuration() {
-        return duration;
-    }
-
-    public String getProtocol() {
-        return protocol;
-    }
-
-    public String getService() {
-        return service;
-    }
-
-    public String getFlag() {
-        return flag;
-    }
-
-    public int getSrcBytes() {
-        return srcBytes;
-    }
-
-    public int getDstBytes() {
-        return dstBytes;
-    }
-
-    public String getLabel() {
-        return attackCategory;
-    }
-
-    public String getAttackCategory() {
-        return attackCategory;
-    }
+    public int getDuration() { return duration; }
+    public String getProtocol() { return protocol; }
+    public String getService() { return service; }
+    public String getFlag() { return flag; }
+    public int getSrcBytes() { return srcBytes; }
+    public int getDstBytes() { return dstBytes; }
+    public String getLabel() { return label; }
 
     public String get(String columnName) {
         return values.get(columnName);
