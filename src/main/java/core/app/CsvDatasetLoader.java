@@ -32,7 +32,31 @@ public class CsvDatasetLoader {
                 Map<String, Object> fieldMap = new HashMap<>();
 
                 for (int i = 0; i < headers.length && i < values.length; i++) {
-                    fieldMap.put(headers[i].trim(), values[i].trim());
+                    String header = headers[i].trim();
+                    String value = values[i].trim();
+
+                    // store original CSV header
+                    fieldMap.put(header, value);
+
+                    // add aliases for UI
+                    if (header.equalsIgnoreCase("protocol_type")) {
+                        fieldMap.put("protocol", value);
+                    }
+                    if (header.equalsIgnoreCase("service")) {
+                        fieldMap.put("service", value);
+                    }
+                    if (header.equalsIgnoreCase("flag")) {
+                        fieldMap.put("flag", value);
+                    }
+                    if (header.equalsIgnoreCase("src_bytes")) {
+                        fieldMap.put("srcBytes", value);
+                    }
+                    if (header.equalsIgnoreCase("dst_bytes")) {
+                        fieldMap.put("dstBytes", value);
+                    }
+                    if (header.equalsIgnoreCase("label")) {
+                        fieldMap.put("label", value);
+                    }
                 }
 
                 TrafficRecord record = new CsvTrafficRecord(
