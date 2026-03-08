@@ -30,10 +30,12 @@ public class MainLayout extends BorderPane {
         Button featureBtn = createNavButton("🧩  Feature Inspector"); // ✅ new
         Button resultsBtn = createNavButton("🤖  Detection Results");
         Button alertsBtn = createNavButton("🚨  Alerts / Logs");
-
+        Button visualizationBtn = createNavButton("📊  Visualization");
+       
         // ✅ Add buttons ONLY ONCE (and in correct order)
-        sidebar.getChildren().addAll(homeBtn, trafficBtn, featureBtn, resultsBtn, alertsBtn);
-
+        sidebar.getChildren().addAll(homeBtn, trafficBtn, featureBtn, resultsBtn, visualizationBtn, alertsBtn);
+       
+        
         // ===== Content Area =====
         contentArea.getStyleClass().add("content-area");
         contentArea.setPadding(new Insets(20));
@@ -48,6 +50,7 @@ public class MainLayout extends BorderPane {
         trafficBtn.setOnAction(e -> showTraffic());
         featureBtn.setOnAction(e -> showFeatureInspector()); // ✅ new
         resultsBtn.setOnAction(e -> showResults());
+        visualizationBtn.setOnAction(e -> showVisualization());
         alertsBtn.setOnAction(e -> showAlerts());
     }
 
@@ -91,6 +94,18 @@ public class MainLayout extends BorderPane {
         contentArea.getChildren().setAll(
             new DetectionResultsScreen(cachedResults)
         );
+    }
+    private void showVisualization() {
+    // Use cached results if available, otherwise run pipeline
+    if (cachedResults == null) {
+        System.out.println("Running detection pipeline for visualization...");
+        PipelineRunner runner = new PipelineRunner();
+        cachedResults = runner.run("data/nsl_kdd_test_clean.csv");
+    }
+
+    contentArea.getChildren().setAll(
+        new VisualizationScreen(cachedResults)
+    );
     }
     private void showAlerts() {
         contentArea.getChildren().setAll(new AlertsLogsScreen());
