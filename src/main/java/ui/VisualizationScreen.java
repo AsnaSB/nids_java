@@ -21,6 +21,9 @@ public class VisualizationScreen extends VBox {
         setPadding(new Insets(20));
         setStyle("-fx-background-color: #f4f4f4;");
 
+        Label pageTitle = new Label("Attack Analytics & Visualization");
+        pageTitle.getStyleClass().add("title");
+
         // ------------------------------
         // 1. Summary Cards
         // ------------------------------
@@ -48,7 +51,7 @@ public class VisualizationScreen extends VBox {
 
         chartsRow.getChildren().addAll(leftColumn, rightColumn);
 
-        getChildren().addAll(summaryBar, chartsRow);
+        getChildren().addAll(pageTitle, summaryBar, chartsRow);
     }
 
     // ------------------------------

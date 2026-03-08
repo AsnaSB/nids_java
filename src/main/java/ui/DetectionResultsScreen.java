@@ -35,68 +35,65 @@ public class DetectionResultsScreen extends BorderPane {
 
         buildCategorySummary();
 
-        setTop(summaryBox);
+        VBox topContainer = new VBox(10);
+
+        Label pageTitle = new Label("Intrusion Detection Results");
+        pageTitle.getStyleClass().add("title");
+
+        topContainer.getChildren().addAll(pageTitle, summaryBox);
+
+        setTop(topContainer);
 
         buildTable();
-
         buildDetailsPanel();
     }
 
-    // ===============================
-    // SUMMARY LEVEL-1
-    // ===============================
-
     private void buildCategorySummary() {
 
-    summaryBox.getChildren().clear();
+        summaryBox.getChildren().clear();
 
-    Label title = new Label("Attack Category Summary");
-    title.setStyle("-fx-font-size:16px; -fx-font-weight:bold;");
+        Label title = new Label("Attack Category Summary");
+        title.setStyle("-fx-font-size:16px; -fx-font-weight:bold;");
 
-    summaryBox.getChildren().add(title);
+        summaryBox.getChildren().add(title);
 
-    int total = results.size();
+        int total = results.size();
 
-    Map<String, Long> categoryCounts =
-            results.stream()
-                    .collect(Collectors.groupingBy(
-                            DetectionResult::getPredictedCategory,
-                            Collectors.counting()
-                    ));
+        Map<String, Long> categoryCounts =
+                results.stream()
+                        .collect(Collectors.groupingBy(
+                                DetectionResult::getPredictedCategory,
+                                Collectors.counting()
+                        ));
 
-    categoryCounts.entrySet()
-            .stream()
-            .sorted(Map.Entry.comparingByKey())
-            .forEach(entry -> {
+        categoryCounts.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(entry -> {
 
-                String category = entry.getKey();
-                long count = entry.getValue();
+                    String category = entry.getKey();
+                    long count = entry.getValue();
 
-                double percent = (count * 100.0) / total;
+                    double percent = (count * 100.0) / total;
 
-                Label row = new Label(
-                        category.toUpperCase()
-                                + " : "
-                                + count
-                                + " ("
-                                + String.format("%.2f", percent)
-                                + "%)"
-                );
+                    Label row = new Label(
+                            category.toUpperCase()
+                                    + " : "
+                                    + count
+                                    + " ("
+                                    + String.format("%.2f", percent)
+                                    + "%)"
+                    );
 
-                row.setStyle("-fx-font-size:14px;");
-                summaryBox.getChildren().add(row);
-            });
+                    row.setStyle("-fx-font-size:14px;");
+                    summaryBox.getChildren().add(row);
+                });
 
-    Button breakdownBtn = new Button("View Attack Breakdown");
+        Button breakdownBtn = new Button("View Attack Breakdown");
+        breakdownBtn.setOnAction(e -> buildAttackBreakdown());
 
-    breakdownBtn.setOnAction(e -> buildAttackBreakdown());
-
-    summaryBox.getChildren().add(breakdownBtn);
-}
-
-    // ===============================
-    // SUMMARY LEVEL-2
-    // ===============================
+        summaryBox.getChildren().add(breakdownBtn);
+    }
 
     private void buildAttackBreakdown() {
 
@@ -125,21 +122,16 @@ public class DetectionResultsScreen extends BorderPane {
         });
 
         Button backBtn = new Button("Back to Category Summary");
-
         backBtn.setOnAction(e -> buildCategorySummary());
 
         summaryBox.getChildren().add(backBtn);
     }
 
-    // ===============================
-    // TABLE
-    // ===============================
-
     private void buildTable() {
 
         table = new TableView<>();
 
-        TableColumn<DetectionResult,String> categoryCol =
+        TableColumn<DetectionResult, String> categoryCol =
                 new TableColumn<>("Predicted Category");
 
         categoryCol.setCellValueFactory(data ->
@@ -147,7 +139,7 @@ public class DetectionResultsScreen extends BorderPane {
                         data.getValue().getPredictedCategory()
                 ));
 
-        TableColumn<DetectionResult,String> confidenceCol =
+        TableColumn<DetectionResult, String> confidenceCol =
                 new TableColumn<>("Confidence");
 
         confidenceCol.setCellValueFactory(data ->
@@ -156,7 +148,7 @@ public class DetectionResultsScreen extends BorderPane {
                                 data.getValue().getConfidence())
                 ));
 
-        TableColumn<DetectionResult,String> top3Col =
+        TableColumn<DetectionResult, String> top3Col =
                 new TableColumn<>("Top-3 Attacks");
 
         top3Col.setCellValueFactory(data ->
@@ -166,7 +158,7 @@ public class DetectionResultsScreen extends BorderPane {
                         )
                 ));
 
-        TableColumn<DetectionResult,String> severityCol =
+        TableColumn<DetectionResult, String> severityCol =
                 new TableColumn<>("Severity");
 
         severityCol.setCellValueFactory(data ->
@@ -188,10 +180,6 @@ public class DetectionResultsScreen extends BorderPane {
 
         setCenter(table);
     }
-
-    // ===============================
-    // DETAILS PANEL
-    // ===============================
 
     private void buildDetailsPanel() {
 
@@ -219,11 +207,7 @@ public class DetectionResultsScreen extends BorderPane {
         setBottom(bottomBox);
     }
 
-    // ===============================
-    // TOP-3 ATTACKS
-    // ===============================
-
-    private String getTop3Attacks(Map<String,Double> probs) {
+    private String getTop3Attacks(Map<String, Double> probs) {
 
         if (probs == null || probs.isEmpty())
             return "-";
@@ -236,10 +220,6 @@ public class DetectionResultsScreen extends BorderPane {
                 .map(Map.Entry::getKey)
                 .collect(Collectors.joining(", "));
     }
-
-    // ===============================
-    // SEVERITY
-    // ===============================
 
     private String calculateSeverity(
             String category,
@@ -256,10 +236,6 @@ public class DetectionResultsScreen extends BorderPane {
 
         return "LOW";
     }
-
-    // ===============================
-    // DETAILS
-    // ===============================
 
     private String buildDetails(DetectionResult r) {
 
@@ -281,7 +257,7 @@ public class DetectionResultsScreen extends BorderPane {
 
         if (r.getAttackProbabilities() != null) {
 
-            r.getAttackProbabilities().forEach((k,v) ->
+            r.getAttackProbabilities().forEach((k, v) ->
                     sb.append(k)
                             .append(" : ")
                             .append(String.format("%.4f", v))

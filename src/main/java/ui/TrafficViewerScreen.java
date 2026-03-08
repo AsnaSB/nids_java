@@ -32,15 +32,13 @@ public class TrafficViewerScreen extends BorderPane {
 
         setPadding(new Insets(20));
 
-        // Load dataset
         CsvDatasetLoader loader = new CsvDatasetLoader();
         List<TrafficRecord> records = loader.load("data/nsl_kdd_test_clean.csv");
 
         ObservableList<TrafficRecord> masterData = FXCollections.observableArrayList(records);
 
-        // =========================
-        // Top Section
-        // =========================
+        Label pageTitle = new Label("Network Traffic Records");
+        pageTitle.getStyleClass().add("title");
 
         Label title = new Label("Traffic Viewer");
         title.setFont(Font.font(22));
@@ -61,36 +59,29 @@ public class TrafficViewerScreen extends BorderPane {
         HBox summaryBar = new HBox(15, totalLabel, tcpLabel, udpLabel, icmpLabel);
         summaryBar.setPadding(new Insets(10, 0, 10, 0));
 
-        VBox topSection = new VBox(12, title, filterBar, summaryBar);
+        VBox topSection = new VBox(12, pageTitle, title, filterBar, summaryBar);
         topSection.setPadding(new Insets(0, 0, 15, 0));
 
         setTop(topSection);
-        // legend code-color
-        // =========================
-// Legend
-// =========================
 
-Region normalBox = new Region();
-normalBox.setPrefSize(14,14);
-normalBox.setStyle("-fx-background-color:white; -fx-border-color:black;");
+        Region normalBox = new Region();
+        normalBox.setPrefSize(14, 14);
+        normalBox.setStyle("-fx-background-color:white; -fx-border-color:black;");
 
-Region suspiciousBox = new Region();
-suspiciousBox.setPrefSize(14,14);
-suspiciousBox.setStyle("-fx-background-color:#ffd966; -fx-border-color:black;");
+        Region suspiciousBox = new Region();
+        suspiciousBox.setPrefSize(14, 14);
+        suspiciousBox.setStyle("-fx-background-color:#ffd966; -fx-border-color:black;");
 
-Region attackBox = new Region();
-attackBox.setPrefSize(14,14);
-attackBox.setStyle("-fx-background-color:#ff9999; -fx-border-color:black;");
+        Region attackBox = new Region();
+        attackBox.setPrefSize(14, 14);
+        attackBox.setStyle("-fx-background-color:#ff9999; -fx-border-color:black;");
 
-HBox normalLegend = new HBox(6, normalBox, new Label("Normal Traffic"));
-HBox suspiciousLegend = new HBox(6, suspiciousBox, new Label("Suspicious Connection (REJ, RSTO, S0)"));
-HBox attackLegend = new HBox(6, attackBox, new Label("Attack Traffic"));
+        HBox normalLegend = new HBox(6, normalBox, new Label("Normal Traffic"));
+        HBox suspiciousLegend = new HBox(6, suspiciousBox, new Label("Suspicious Connection (REJ, RSTO, S0)"));
+        HBox attackLegend = new HBox(6, attackBox, new Label("Attack Traffic"));
 
-HBox legendBox = new HBox(25, normalLegend, suspiciousLegend, attackLegend);
-legendBox.setPadding(new Insets(5,0,10,0));
-        // =========================
-        // Table
-        // =========================
+        HBox legendBox = new HBox(25, normalLegend, suspiciousLegend, attackLegend);
+        legendBox.setPadding(new Insets(5, 0, 10, 0));
 
         table = new TableView<>();
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -116,10 +107,6 @@ legendBox.setPadding(new Insets(5,0,10,0));
                         data.getValue().fields().get("flag").toString()));
 
         table.getColumns().addAll(rowCol, protocolCol, serviceCol, flagCol);
-
-        // =========================
-        // Filtering
-        // =========================
 
         FilteredList<TrafficRecord> filteredData = new FilteredList<>(masterData, p -> true);
 
@@ -152,39 +139,27 @@ legendBox.setPadding(new Insets(5,0,10,0));
         table.setItems(filteredData);
         updateSummary(filteredData);
 
-        // =========================
-        // Row Coloring
-        // =========================
-
         table.setRowFactory(tv -> new TableRow<>() {
 
-    @Override
-    protected void updateItem(TrafficRecord item, boolean empty) {
+            @Override
+            protected void updateItem(TrafficRecord item, boolean empty) {
 
-        super.updateItem(item, empty);
+                super.updateItem(item, empty);
 
-        if (empty || item == null) {
-            setStyle("");
-            return;
-        }
+                if (empty || item == null) {
+                    setStyle("");
+                    return;
+                }
 
-        String flag = item.fields().getOrDefault("flag", "").toString().toLowerCase();
+                String flag = item.fields().getOrDefault("flag", "").toString().toLowerCase();
 
-        if (flag.equals("rej") || flag.equals("rsto") || flag.equals("s0")) {
-
-            // suspicious connections
-            setStyle("-fx-background-color: #ffe08a;");
-
-        } else {
-
-            setStyle("");
-        }
-    }
-});
-
-        // =========================
-        // Details Panel
-        // =========================
+                if (flag.equals("rej") || flag.equals("rsto") || flag.equals("s0")) {
+                    setStyle("-fx-background-color: #ffe08a;");
+                } else {
+                    setStyle("");
+                }
+            }
+        });
 
         Label detailsTitle = new Label("Connection Details");
         detailsTitle.setFont(Font.font(16));
@@ -213,7 +188,7 @@ legendBox.setPadding(new Insets(5,0,10,0));
             }
         });
 
-       VBox centerBox = new VBox(12, legendBox, table, detailsBox);
+        VBox centerBox = new VBox(12, legendBox, table, detailsBox);
         VBox.setVgrow(table, Priority.ALWAYS);
 
         setCenter(centerBox);
