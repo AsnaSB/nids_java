@@ -10,29 +10,60 @@ public class MLDetector implements Detector {
     @Override
     public DetectionResult detect(double[] features) {
 
-        // placeholder probabilities
+        if (features == null || features.length < 3) {
+            throw new RuntimeException("Invalid ML feature vector");
+        }
 
         Map<String, Double> categoryProbs = new HashMap<>();
-
-        categoryProbs.put("dos", 0.82);
-        categoryProbs.put("probe", 0.09);
-        categoryProbs.put("r2l", 0.05);
-        categoryProbs.put("u2r", 0.03);
-        categoryProbs.put("normal", 0.01);
-
         Map<String, Double> attackProbs = new HashMap<>();
 
-        attackProbs.put("neptune", 0.71);
-        attackProbs.put("smurf", 0.18);
-        attackProbs.put("pod", 0.06);
-        attackProbs.put("back", 0.05);
+        String category;
+        String attack;
+        double confidence;
 
-        return new DetectionResult(
-                "dos",
-                "neptune",
-                categoryProbs,
-                attackProbs,
-                0.82
-        );
+        double duration = features[0];
+        double srcBytes = features[1];
+        double dstBytes = features[2];
+
+        if (srcBytes > 10000 && dstBytes < 100) {
+
+            category = "dos";
+            attack = "neptune";
+            confidence = 0.88;
+
+        } else if (duration > 1000) {
+
+            category = "probe";
+            attack = "ipsweep";
+            confidence = 0.76;
+
+        } else if (dstBytes == 0 && srcBytes < 200) {
+
+            category = "r2l";
+            attack = "guess_passwd";
+            confidence = 0.71;
+
+        } else if (srcBytes < 50 && duration < 10) {
+
+            category = "u2r";
+            attack = "buffer_overflow";
+            confidence = 0.67;
+
+        } else {
+
+            category = "normal";
+            attack = "normal";
+            confidence = 0.93;
+        }
+
+        categoryProbs.put("normal", category.equals("normal") ? confidence : 0.05);
+        categoryProbs.put("dos", category.equals("dos") ? confidence : 0.05);
+        categoryProbs.put("probe", category.equals("probe") ? confidence : 0.05);
+        categoryProbs.put("r2l", category.equals("r2l") ? confidence : 0.05);
+        categoryProbs.put("u2r", category.equals("u2r") ? confidence : 0.05);
+
+        attackProbs.put(attack, confidence);
+
+        return new DetectionResult(category, attack, categoryProbs, attackProbs, confidence);
     }
 }

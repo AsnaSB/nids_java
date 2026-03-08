@@ -1,9 +1,11 @@
 package ui;
 
 import core.contracts.DetectionResult;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -17,16 +19,127 @@ public class DetectionResultsScreen extends BorderPane {
 
     private TableView<DetectionResult> table;
     private TextArea detailsArea;
+    private VBox summaryBox;
+
+    private List<DetectionResult> results;
 
     public DetectionResultsScreen(List<DetectionResult> results) {
 
+        this.results = results;
+
         setPadding(new Insets(20));
+
+        summaryBox = new VBox(8);
+        summaryBox.setPadding(new Insets(10));
+        summaryBox.setAlignment(Pos.CENTER_LEFT);
+
+        buildCategorySummary();
+
+        setTop(summaryBox);
+
+        buildTable();
+
+        buildDetailsPanel();
+    }
+
+    // ===============================
+    // SUMMARY LEVEL-1
+    // ===============================
+
+    private void buildCategorySummary() {
+
+    summaryBox.getChildren().clear();
+
+    Label title = new Label("Attack Category Summary");
+    title.setStyle("-fx-font-size:16px; -fx-font-weight:bold;");
+
+    summaryBox.getChildren().add(title);
+
+    int total = results.size();
+
+    Map<String, Long> categoryCounts =
+            results.stream()
+                    .collect(Collectors.groupingBy(
+                            DetectionResult::getPredictedCategory,
+                            Collectors.counting()
+                    ));
+
+    categoryCounts.entrySet()
+            .stream()
+            .sorted(Map.Entry.comparingByKey())
+            .forEach(entry -> {
+
+                String category = entry.getKey();
+                long count = entry.getValue();
+
+                double percent = (count * 100.0) / total;
+
+                Label row = new Label(
+                        category.toUpperCase()
+                                + " : "
+                                + count
+                                + " ("
+                                + String.format("%.2f", percent)
+                                + "%)"
+                );
+
+                row.setStyle("-fx-font-size:14px;");
+                summaryBox.getChildren().add(row);
+            });
+
+    Button breakdownBtn = new Button("View Attack Breakdown");
+
+    breakdownBtn.setOnAction(e -> buildAttackBreakdown());
+
+    summaryBox.getChildren().add(breakdownBtn);
+}
+
+    // ===============================
+    // SUMMARY LEVEL-2
+    // ===============================
+
+    private void buildAttackBreakdown() {
+
+        summaryBox.getChildren().clear();
+
+        Label title = new Label("Level-2 Attack Breakdown");
+        title.setStyle("-fx-font-size:16px; -fx-font-weight:bold;");
+
+        summaryBox.getChildren().add(title);
+
+        Map<String, Long> attackCounts =
+                results.stream()
+                        .filter(r ->
+                                !r.getPredictedAttack()
+                                        .equalsIgnoreCase("normal"))
+                        .collect(Collectors.groupingBy(
+                                DetectionResult::getPredictedAttack,
+                                Collectors.counting()
+                        ));
+
+        attackCounts.forEach((attack, count) -> {
+
+            Label row = new Label(attack + " : " + count);
+            row.setStyle("-fx-font-size:14px;");
+            summaryBox.getChildren().add(row);
+        });
+
+        Button backBtn = new Button("Back to Category Summary");
+
+        backBtn.setOnAction(e -> buildCategorySummary());
+
+        summaryBox.getChildren().add(backBtn);
+    }
+
+    // ===============================
+    // TABLE
+    // ===============================
+
+    private void buildTable() {
 
         table = new TableView<>();
 
-        // ===== Columns =====
-
-        TableColumn<DetectionResult, String> categoryCol =
+        TableColumn<DetectionResult,String> categoryCol =
                 new TableColumn<>("Predicted Category");
 
         categoryCol.setCellValueFactory(data ->
@@ -34,23 +147,26 @@ public class DetectionResultsScreen extends BorderPane {
                         data.getValue().getPredictedCategory()
                 ));
 
-        TableColumn<DetectionResult, String> confidenceCol =
+        TableColumn<DetectionResult,String> confidenceCol =
                 new TableColumn<>("Confidence");
 
         confidenceCol.setCellValueFactory(data ->
                 new SimpleStringProperty(
-                        String.format("%.2f", data.getValue().getConfidence())
+                        String.format("%.2f",
+                                data.getValue().getConfidence())
                 ));
 
-        TableColumn<DetectionResult, String> topAttackCol =
-                new TableColumn<>("Top‑3 Attacks");
+        TableColumn<DetectionResult,String> top3Col =
+                new TableColumn<>("Top-3 Attacks");
 
-        topAttackCol.setCellValueFactory(data ->
+        top3Col.setCellValueFactory(data ->
                 new SimpleStringProperty(
-                        getTop3Attacks(data.getValue().getAttackProbabilities())
+                        getTop3Attacks(
+                                data.getValue().getAttackProbabilities()
+                        )
                 ));
 
-        TableColumn<DetectionResult, String> severityCol =
+        TableColumn<DetectionResult,String> severityCol =
                 new TableColumn<>("Severity");
 
         severityCol.setCellValueFactory(data ->
@@ -64,41 +180,50 @@ public class DetectionResultsScreen extends BorderPane {
         table.getColumns().addAll(
                 categoryCol,
                 confidenceCol,
-                topAttackCol,
+                top3Col,
                 severityCol
         );
 
         table.setItems(FXCollections.observableArrayList(results));
 
-        // ===== Details panel =====
+        setCenter(table);
+    }
+
+    // ===============================
+    // DETAILS PANEL
+    // ===============================
+
+    private void buildDetailsPanel() {
 
         detailsArea = new TextArea();
         detailsArea.setEditable(false);
         detailsArea.setPrefHeight(200);
 
-        table.getSelectionModel().selectedItemProperty().addListener(
-                (obs, oldVal, newVal) -> {
+        table.getSelectionModel().selectedItemProperty()
+                .addListener((obs, oldVal, newVal) -> {
 
                     if (newVal != null) {
                         detailsArea.setText(buildDetails(newVal));
                     }
-                }
-        );
+
+                });
 
         VBox bottomBox = new VBox(10);
         bottomBox.setPadding(new Insets(10));
+
         bottomBox.getChildren().addAll(
                 new Label("Attack Probability Breakdown"),
                 detailsArea
         );
 
-        setCenter(table);
         setBottom(bottomBox);
     }
 
-    // ===== Top 3 Attacks =====
+    // ===============================
+    // TOP-3 ATTACKS
+    // ===============================
 
-    private String getTop3Attacks(Map<String, Double> probs) {
+    private String getTop3Attacks(Map<String,Double> probs) {
 
         if (probs == null || probs.isEmpty())
             return "-";
@@ -112,9 +237,13 @@ public class DetectionResultsScreen extends BorderPane {
                 .collect(Collectors.joining(", "));
     }
 
-    // ===== Severity =====
+    // ===============================
+    // SEVERITY
+    // ===============================
 
-    private String calculateSeverity(String category, double confidence) {
+    private String calculateSeverity(
+            String category,
+            double confidence) {
 
         if ("normal".equalsIgnoreCase(category))
             return "NONE";
@@ -128,7 +257,9 @@ public class DetectionResultsScreen extends BorderPane {
         return "LOW";
     }
 
-    // ===== Details panel =====
+    // ===============================
+    // DETAILS
+    // ===============================
 
     private String buildDetails(DetectionResult r) {
 
@@ -150,7 +281,7 @@ public class DetectionResultsScreen extends BorderPane {
 
         if (r.getAttackProbabilities() != null) {
 
-            r.getAttackProbabilities().forEach((k, v) ->
+            r.getAttackProbabilities().forEach((k,v) ->
                     sb.append(k)
                             .append(" : ")
                             .append(String.format("%.4f", v))

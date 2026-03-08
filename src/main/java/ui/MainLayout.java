@@ -7,16 +7,23 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.*;
 
 public class MainLayout extends BorderPane {
-
+    
     private final StackPane contentArea = new StackPane();
-
+    private List<DetectionResult> cachedResults;
     public MainLayout() {
+        getStyleClass().add("root");
+
+        // Run pipeline once when application starts
+        System.out.println("Initializing NIDS detection pipeline...");
+        PipelineRunner runner = new PipelineRunner();
+        cachedResults = runner.run("data/nsl_kdd_test_clean.csv");
+        System.out.println("Pipeline initialization complete.");
 
         // ===== Sidebar =====
         VBox sidebar = new VBox(20);
         sidebar.setPadding(new Insets(20));
         sidebar.setPrefWidth(200);
-        sidebar.setStyle("-fx-background-color: white;");
+        sidebar.getStyleClass().add("sidebar");
 
         Button homeBtn = createNavButton("🏠  Home");
         Button trafficBtn = createNavButton("📡  Traffic Viewer");
@@ -28,8 +35,8 @@ public class MainLayout extends BorderPane {
         sidebar.getChildren().addAll(homeBtn, trafficBtn, featureBtn, resultsBtn, alertsBtn);
 
         // ===== Content Area =====
-        contentArea.setStyle("-fx-background-color: white;");
-
+        contentArea.getStyleClass().add("content-area");
+        contentArea.setPadding(new Insets(20));
         setLeft(sidebar);
         setCenter(contentArea);
 
@@ -46,41 +53,20 @@ public class MainLayout extends BorderPane {
 
     // ===== Button Style =====
     private Button createNavButton(String text) {
+
         Button btn = new Button(text);
         btn.setMaxWidth(Double.MAX_VALUE);
 
-        String normal =
-            "-fx-background-color: white;" +
-            "-fx-text-fill: #111827;" +
-            "-fx-font-size: 14px;" +
-            "-fx-padding: 10 12;" +
-            "-fx-background-radius: 10;" +
-            "-fx-border-color: black;" +
-            "-fx-border-width: 2;" +
-            "-fx-border-radius: 10;";
-
-        String hover =
-            "-fx-background-color: #f9fafb;" +
-            "-fx-text-fill: #111827;" +
-            "-fx-font-size: 14px;" +
-            "-fx-padding: 10 12;" +
-            "-fx-background-radius: 10;" +
-            "-fx-border-color: black;" +
-            "-fx-border-width: 2;" +
-            "-fx-border-radius: 10;";
-
-        btn.setStyle(normal);
-
-        btn.setOnMouseEntered(e -> btn.setStyle(hover));
-        btn.setOnMouseExited(e -> btn.setStyle(normal));
+        btn.getStyleClass().add("nav-button");
 
         return btn;
     }
 
     // ===== Screen Switching =====
     private void showHome() {
-        contentArea.getChildren().setAll(new HomeScreen());
+            contentArea.getChildren().setAll(new HomeScreen(cachedResults));
     }
+
 
     private void showTraffic() {
         contentArea.getChildren().setAll(new TrafficViewerScreen());
@@ -90,17 +76,22 @@ public class MainLayout extends BorderPane {
         contentArea.getChildren().setAll(new FeatureInspectorScreen()); // ✅ new screen class
     }
 
-   private void showResults() {
+    private void showResults() {
 
-    core.app.PipelineRunner runner = new core.app.PipelineRunner();
+        if (cachedResults == null) {
 
-    java.util.List<core.contracts.DetectionResult> results =
-            runner.run("data/nsl_kdd_test_clean.csv");
+            System.out.println("Running detection pipeline...");
 
-    contentArea.getChildren().setAll(
-            new DetectionResultsScreen(results)
-    );
-}
+            PipelineRunner runner = new PipelineRunner();
+            cachedResults = runner.run("data/nsl_kdd_test_clean.csv");
+
+            System.out.println("Detection pipeline completed.");
+        }
+
+        contentArea.getChildren().setAll(
+            new DetectionResultsScreen(cachedResults)
+        );
+    }
     private void showAlerts() {
         contentArea.getChildren().setAll(new AlertsLogsScreen());
     }

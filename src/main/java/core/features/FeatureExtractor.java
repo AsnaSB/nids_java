@@ -36,14 +36,24 @@ public class FeatureExtractor {
 
         boolean incomplete = !missing.isEmpty();
 
+        // Generate ML feature vector
+        float[] mlFeatures = extractMLFeatures(record);
+
+        // Convert float[] -> double[]
+        double[] mlVector = new double[mlFeatures.length];
+
+        for (int i = 0; i < mlFeatures.length; i++) {
+        mlVector[i] = mlFeatures[i];
+        }
+
         return new FlowFeatures(
-                count,
-                serrorRate,
-                dstHostCount,
-                rerrorRate,
-                incomplete,
-                missing,
-                null
+            count,
+            serrorRate,
+            dstHostCount,
+            rerrorRate,
+            incomplete,
+            missing,
+            mlVector
         );
     }
 
