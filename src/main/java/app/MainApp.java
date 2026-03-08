@@ -10,8 +10,10 @@ public class MainApp extends Application {
 	@Override
 	public void start(Stage stage) {
 		MainLayout root = new MainLayout();
-		Scene scene = new Scene(root, 1000, 600);
-
+		Scene scene = new Scene(root, 1200, 700);
+		scene.getStylesheets().add(
+    MainApp.class.getResource("/style.css").toExternalForm()
+);
 		stage.setTitle("AI-Powered NIDS");
 		stage.setScene(scene);
 		stage.show();

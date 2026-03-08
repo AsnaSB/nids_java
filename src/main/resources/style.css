@@ -1,0 +1,48 @@
+.root
+{
+    -fx-font-family: "Segoe UI";
+    -fx-background-color:#f3f4f6;
+}
+.sidebar
+{
+    -fx-background-color:#111827;
+}
+.nav-button
+{
+    -fx-background-color:transparent;
+    -fx-text-fill:white;
+    -fx-font-size:14px;
+    -fx-alignment:CENTER_LEFT;
+    -fx-padding:10 20;
+    -fx-background-radius:8;
+}
+.nav-button:hover{
+    -fx-background-color:#374151;
+}
+.card
+{
+    -fx-background-color:white;
+    -fx-background-radius:12;
+    -fx-padding:20;
+    -fx-effect: dropshadow(three-pass-box,rgba(0,0,0,0.15),10,0,0,4);
+}
+.title
+{
+    -fx-font-size:22px;
+    -fx-font-weight:bold;
+}
+.sev-high
+{
+    -fx-text-fill:#ef4444;
+}
+.sev-medium
+{
+    -fx-text-fill:#f59e0b;
+}
+.sev-low
+{
+    -fx-text-fill:#10b981;
+}
+.content-area{
+    -fx-background-color: #f3f4f6;
+}
