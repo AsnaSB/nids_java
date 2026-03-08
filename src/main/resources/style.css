@@ -46,3 +46,12 @@
 .content-area{
     -fx-background-color: #f3f4f6;
 }
+.nav-button:hover{
+    -fx-background-color:#374151;
+}
+
+.active-nav
+{
+    -fx-background-color:#374151;
+    -fx-font-weight:bold;
+}

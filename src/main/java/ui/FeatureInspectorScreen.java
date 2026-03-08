@@ -11,7 +11,6 @@ import java.util.*;
 
 public class FeatureInspectorScreen extends BorderPane {
 
-    // ✅ Updated dataset for Phase-2
     private static final String DEFAULT_CSV_PATH = "data/test_hierarchial_ml.csv";
 
     private final TextField pathField = new TextField(DEFAULT_CSV_PATH);
@@ -29,13 +28,16 @@ public class FeatureInspectorScreen extends BorderPane {
 
     public FeatureInspectorScreen() {
 
+        Label pageTitle = new Label("Extracted Feature Inspection");
+        pageTitle.getStyleClass().add("title");
+
         HBox top = new HBox(10, new Label("CSV Path:"), pathField, loadBtn);
         top.setPadding(new Insets(12));
         top.setAlignment(Pos.CENTER_LEFT);
 
         loadBtn.setOnAction(e -> loadCsv());
 
-        VBox topBox = new VBox(8, top, loadStatus);
+        VBox topBox = new VBox(8, pageTitle, top, loadStatus);
         topBox.setPadding(new Insets(10));
 
         HBox inspectorBar = new HBox(10, new Label("Row index:"), indexField, inspectBtn);
