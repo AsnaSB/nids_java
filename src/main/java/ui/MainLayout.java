@@ -20,15 +20,10 @@ public class MainLayout extends BorderPane {
 
         getStyleClass().add("root");
 
-        // Run detection pipeline once
         System.out.println("Initializing NIDS detection pipeline...");
         PipelineRunner runner = new PipelineRunner();
         cachedResults = runner.run("data/nsl_kdd_test_clean.csv");
         System.out.println("Pipeline initialization complete.");
-
-        // =========================
-        // Sidebar
-        // =========================
 
         VBox sidebar = new VBox(20);
         sidebar.setPadding(new Insets(20));
@@ -51,22 +46,13 @@ public class MainLayout extends BorderPane {
                 alertsBtn
         );
 
-        // =========================
-        // Content Area
-        // =========================
-
         contentArea.getStyleClass().add("content-area");
         contentArea.setPadding(new Insets(20));
 
         setLeft(sidebar);
         setCenter(contentArea);
 
-        // Default screen
         showHome();
-
-        // =========================
-        // Navigation
-        // =========================
 
         homeBtn.setOnAction(e -> showHome());
         trafficBtn.setOnAction(e -> showTraffic());
@@ -76,10 +62,6 @@ public class MainLayout extends BorderPane {
         alertsBtn.setOnAction(e -> showAlerts());
     }
 
-    // =========================
-    // Button Style
-    // =========================
-
     private Button createNavButton(String text) {
 
         Button btn = new Button(text);
@@ -88,10 +70,6 @@ public class MainLayout extends BorderPane {
 
         return btn;
     }
-
-    // =========================
-    // Screen Switching
-    // =========================
 
     private void showHome() {
 
@@ -118,12 +96,8 @@ public class MainLayout extends BorderPane {
 
         if (cachedResults == null) {
 
-            System.out.println("Running detection pipeline...");
-
             PipelineRunner runner = new PipelineRunner();
             cachedResults = runner.run("data/nsl_kdd_test_clean.csv");
-
-            System.out.println("Detection pipeline completed.");
         }
 
         contentArea.getChildren().setAll(
@@ -134,8 +108,6 @@ public class MainLayout extends BorderPane {
     private void showVisualization() {
 
         if (cachedResults == null) {
-
-            System.out.println("Running detection pipeline for visualization...");
 
             PipelineRunner runner = new PipelineRunner();
             cachedResults = runner.run("data/nsl_kdd_test_clean.csv");
